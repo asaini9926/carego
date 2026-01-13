@@ -1,0 +1,46 @@
+# =========================
+# Global ignores
+# =========================
+node_modules/
+.env
+.env.*
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+
+# Build outputs (common)
+dist/
+build/
+out/
+
+# =========================
+# Frontend specific
+# =========================
+carego-frontend/node_modules/
+carego-frontend/.env
+carego-frontend/.env.*
+
+# =========================
+# Backend specific
+# =========================
+carego-backend/node_modules/
+carego-backend/.env
+carego-backend/.env.*
+
+# =========================
+# Optional: coverage & cache
+# =========================
+coverage/
+.cache/

@@ -1,0 +1,453 @@
+////////////////////////////////////////////////////////////
+// PRISMA SETUP
+////////////////////////////////////////////////////////////
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+////////////////////////////////////////////////////////////
+// ENUMS
+////////////////////////////////////////////////////////////
+
+enum UserType {
+  SUPER_ADMIN
+  ADMIN
+  CLIENT
+  STAFF
+  STUDENT
+  TEACHER
+}
+
+enum AccountStatus {
+  ACTIVE
+  SUSPENDED
+  TERMINATED
+}
+
+enum VerificationStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum LeadType {
+  SERVICE
+  TRAINING
+  EQUIPMENT
+  STAFF
+  TEACHER
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  CONVERTED
+  LOST
+}
+
+enum ShiftType {
+  MORNING
+  EVENING
+  NIGHT
+  FULL_DAY
+}
+
+enum AssignmentStatus {
+  ACTIVE
+  PAUSED
+  COMPLETED
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+}
+
+enum InvoiceStatus {
+  PAID
+  UNPAID
+  OVERDUE
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAUSED
+  CANCELLED
+}
+
+////////////////////////////////////////////////////////////
+// CORE IDENTITY
+////////////////////////////////////////////////////////////
+
+model User {
+  id            String        @id @default(uuid())
+  phone         String        @unique
+  email         String?
+  passwordHash  String
+  userType      UserType
+  status        AccountStatus @default(ACTIVE)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  clientProfile  ClientProfile?
+  staffProfile   StaffProfile?
+  studentProfile StudentProfile?
+  teacherProfile TeacherProfile?
+}
+
+////////////////////////////////////////////////////////////
+// CITY & TRAINING CENTERS
+////////////////////////////////////////////////////////////
+
+model City {
+  id    String @id @default(uuid())
+  name  String
+  state String
+}
+
+model TrainingCenter {
+  id     String @id @default(uuid())
+  name   String
+  cityId String
+
+  city   City @relation(fields: [cityId], references: [id])
+}
+
+////////////////////////////////////////////////////////////
+// WEBSITE / CRM LEADS
+////////////////////////////////////////////////////////////
+
+model Lead {
+  id          String     @id @default(uuid())
+  type        LeadType
+  status      LeadStatus @default(NEW)
+  name        String
+  phone       String
+  city        String
+  source      String
+  notes       String?
+
+  createdAt  DateTime @default(now())
+}
+
+////////////////////////////////////////////////////////////
+// CLIENT & PATIENT (CAREGO CORE)
+////////////////////////////////////////////////////////////
+
+model ClientProfile {
+  userId String @id
+  cityId String
+
+  user   User @relation(fields: [userId], references: [id])
+  city   City @relation(fields: [cityId], references: [id])
+
+  patients       Patient[]
+  subscriptions  ClientSubscription[]
+}
+
+model Patient {
+  id        String @id @default(uuid())
+  clientId  String
+  name      String
+  age       Int
+  condition String
+
+  client ClientProfile @relation(fields: [clientId], references: [userId])
+}
+
+////////////////////////////////////////////////////////////
+// STAFF & FIELD OPERATIONS
+////////////////////////////////////////////////////////////
+
+model StaffProfile {
+  userId        String @id
+  cityId        String
+  specialization String
+  verification  VerificationStatus
+  payType       String   // DAILY / MONTHLY
+
+  user User @relation(fields: [userId], references: [id])
+  city City @relation(fields: [cityId], references: [id])
+
+  assignments StaffAssignment[]
+}
+
+model StaffAssignment {
+  id         String @id @default(uuid())
+  staffId    String
+  patientId  String
+  shift      ShiftType
+  startDate  DateTime
+  endDate    DateTime?
+  status     AssignmentStatus
+
+  staff   StaffProfile @relation(fields: [staffId], references: [userId])
+  patient Patient      @relation(fields: [patientId], references: [id])
+
+  attendanceLogs AttendanceLog[]
+  careLogs       CareLog[]
+}
+
+model AttendanceLog {
+  id           String @id @default(uuid())
+  assignmentId String
+  checkIn      DateTime
+  checkOut     DateTime?
+  latitude     Float
+  longitude    Float
+
+  assignment StaffAssignment @relation(fields: [assignmentId], references: [id])
+}
+
+model CareLog {
+  id           String @id @default(uuid())
+  assignmentId String
+  notes        String
+  mood         String
+  createdAt    DateTime @default(now())
+
+  assignment StaffAssignment @relation(fields: [assignmentId], references: [id])
+}
+
+model VitalsLog {
+  id        String @id @default(uuid())
+  patientId String
+  staffId   String
+  bpSys     Int
+  bpDia     Int
+  spo2      Int
+  pulse     Int
+  temp      Float
+  sugar     Float
+  loggedAt DateTime @default(now())
+
+  patient Patient      @relation(fields: [patientId], references: [id])
+  staff   StaffProfile @relation(fields: [staffId], references: [userId])
+}
+
+////////////////////////////////////////////////////////////
+// TRAINING / LMS SYSTEM
+////////////////////////////////////////////////////////////
+
+model Course {
+  id          String @id @default(uuid())
+  name        String
+  description String
+}
+
+model Syllabus {
+  id          String @id @default(uuid())
+  title       String
+  description String
+}
+
+model CourseOffering {
+  id            String @id @default(uuid())
+  courseId      String
+  syllabusId    String
+  tenureMonths Int
+  feeAmount    Float
+
+  course   Course   @relation(fields: [courseId], references: [id])
+  syllabus Syllabus @relation(fields: [syllabusId], references: [id])
+
+  batches Batch[]
+}
+
+model Batch {
+  id               String @id @default(uuid())
+  centerId         String
+  courseOfferingId String
+  shift            ShiftType
+  startDate        DateTime
+  endDate          DateTime?
+
+  center   TrainingCenter @relation(fields: [centerId], references: [id])
+  offering CourseOffering @relation(fields: [courseOfferingId], references: [id])
+
+  students       StudentBatch[]
+  sessions       ClassSession[]
+  materials      StudyMaterial[]
+  assignments    Assignment[]
+  exams          Exam[]
+}
+
+model StudentProfile {
+  userId String @id
+  status String   // enrolled, active, dropped, completed
+
+  user User @relation(fields: [userId], references: [id])
+
+  batches StudentBatch[]
+}
+
+model StudentBatch {
+  id        String @id @default(uuid())
+  studentId String
+  batchId   String
+
+  student StudentProfile @relation(fields: [studentId], references: [userId])
+  batch   Batch          @relation(fields: [batchId], references: [id])
+}
+
+model StudentAttendance {
+  id        String @id @default(uuid())
+  studentId String
+  batchId   String
+  date      DateTime
+  status    AttendanceStatus
+
+  student StudentProfile @relation(fields: [studentId], references: [userId])
+  batch   Batch          @relation(fields: [batchId], references: [id])
+}
+
+model ExamEligibility {
+  id         String @id @default(uuid())
+  studentId  String
+  batchId    String
+  eligible   Boolean
+  approvedBy String?
+  reason     String?
+
+  student StudentProfile @relation(fields: [studentId], references: [userId])
+  batch   Batch          @relation(fields: [batchId], references: [id])
+}
+
+model TeacherProfile {
+  userId String @id
+
+  user User @relation(fields: [userId], references: [id])
+
+  sessions ClassSession[]
+}
+
+model ClassSession {
+  id        String @id @default(uuid())
+  batchId   String
+  teacherId String
+  date      DateTime
+  topic     String
+
+  batch   Batch          @relation(fields: [batchId], references: [id])
+  teacher TeacherProfile @relation(fields: [teacherId], references: [userId])
+}
+
+model StudyMaterial {
+  id      String @id @default(uuid())
+  batchId String
+  title   String
+  fileUrl String
+
+  batch Batch @relation(fields: [batchId], references: [id])
+}
+
+model Assignment {
+  id      String @id @default(uuid())
+  batchId String
+  title   String
+  dueDate DateTime
+
+  batch Batch @relation(fields: [batchId], references: [id])
+  submissions AssignmentSubmission[]
+}
+
+model AssignmentSubmission {
+  id           String @id @default(uuid())
+  assignmentId String
+  studentId    String
+  fileUrl      String
+  marks        Float?
+  remarks      String?
+
+  assignment Assignment     @relation(fields: [assignmentId], references: [id])
+  student    StudentProfile @relation(fields: [studentId], references: [userId])
+}
+
+model Exam {
+  id       String @id @default(uuid())
+  batchId  String
+  title    String
+  maxMarks Float
+
+  batch Batch @relation(fields: [batchId], references: [id])
+  results ExamResult[]
+}
+
+model ExamResult {
+  id        String @id @default(uuid())
+  examId    String
+  studentId String
+  marks     Float
+  grade     String
+
+  exam    Exam           @relation(fields: [examId], references: [id])
+  student StudentProfile @relation(fields: [studentId], references: [userId])
+}
+
+model Certificate {
+  id        String @id @default(uuid())
+  studentId String
+  batchId   String
+  fileUrl   String
+  issuedAt  DateTime @default(now())
+
+  student StudentProfile @relation(fields: [studentId], references: [userId])
+  batch   Batch          @relation(fields: [batchId], references: [id])
+}
+
+////////////////////////////////////////////////////////////
+// FINANCE (CLIENT + STUDENT)
+////////////////////////////////////////////////////////////
+
+model Invoice {
+  id        String @id @default(uuid())
+  ownerType String   // CLIENT / STUDENT
+  ownerId   String
+  amount    Float
+  tax       Float
+  total     Float
+  status    InvoiceStatus
+  createdAt DateTime @default(now())
+
+  payments Payment[]
+}
+
+model Payment {
+  id        String @id @default(uuid())
+  invoiceId String
+  method    String
+  reference String
+  amount    Float
+  paidAt    DateTime
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id])
+}
+
+////////////////////////////////////////////////////////////
+// CARE SHIELD SUBSCRIPTIONS
+////////////////////////////////////////////////////////////
+
+model SubscriptionPlan {
+  id    String @id @default(uuid())
+  name  String
+  price Float
+}
+
+model ClientSubscription {
+  id        String @id @default(uuid())
+  clientId  String
+  planId    String
+  status    SubscriptionStatus
+
+  client ClientProfile    @relation(fields: [clientId], references: [userId])
+  plan   SubscriptionPlan @relation(fields: [planId], references: [id])
+}
