@@ -12,7 +12,8 @@ const pool = mysql.createPool({
   database: process.env.DB_NAME || 'carego_db',
   waitForConnections: true,
   connectionLimit: 10, // Max concurrent connections
-  queueLimit: 0        // Unlimited queueing
+  queueLimit: 0,        // Unlimited queueing
+  charset: 'utf8mb4'
 });
 
 // Convert pool to promise-based (allows using 'await' in controllers)

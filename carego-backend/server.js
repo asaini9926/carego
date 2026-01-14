@@ -9,13 +9,10 @@ dotenv.config();
 const app = express();
 
 // 1. MIDDLEWARE ------------------------------------------------
-const corsOptions = {
-  origin: 'http://localhost:3000',
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-};
-
-app.use(cors(corsOptions));// Allow all origins for dev (configure for production later)
+app.use(cors({
+  origin: 'http://localhost:3000', // Explicitly allow the frontend URL
+  credentials: true                // Allow cookies and headers to be sent
+}));
 app.use(express.json()); // Parse JSON bodies
 
 // 2. ROUTES ----------------------------------------------------
