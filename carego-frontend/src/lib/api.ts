@@ -1,43 +1,23 @@
 import axios from 'axios';
-import Cookies from 'js-cookie';
 
+// DIRECT CONNECTION to your running backend
 const API_URL = 'http://localhost:5000/api/v1';
 
-// 1. Public API Client (No Auth)
-export const publicApi = axios.create({
+export const api = axios.create({
   baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // Important if you use cookies later
 });
 
-// 2. Admin API Client (With Auth)
-export const adminApi = axios.create({
-  baseURL: API_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// Interceptor: Attach Token to Admin Requests
-adminApi.interceptors.request.use((config) => {
-  const token = Cookies.get('admin_token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+// Helper to attach token if you store it in localStorage
+api.interceptors.request.use((config) => {
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
   }
   return config;
 });
-
-// Interceptor: Handle 401 (Unauthorized) - Auto Logout
-adminApi.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      Cookies.remove('admin_token');
-      if (typeof window !== 'undefined') {
-         window.location.href = '/admin/login';
-      }
-    }
-    return Promise.reject(error);
-  }
-);
