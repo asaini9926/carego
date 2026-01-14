@@ -7,7 +7,8 @@ import {
   HomeIcon, 
   UsersIcon, 
   ChartBarIcon, 
-  ArrowLeftOnRectangleIcon 
+  ArrowLeftOnRectangleIcon ,
+  WrenchScrewdriverIcon
 } from "@heroicons/react/24/outline";
 
 export default function AdminLayout({
@@ -42,6 +43,11 @@ export default function AdminLayout({
           <Link href="/admin/leads" className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition">
             <UsersIcon className="w-5 h-5" />
             Leads CRM
+          </Link>
+
+           <Link href="/admin/services" className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition">
+            <WrenchScrewdriverIcon className="w-5 h-5" />
+            Manage Services
           </Link>
           
           <button 
