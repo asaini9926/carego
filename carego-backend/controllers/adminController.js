@@ -9,33 +9,43 @@ exports.getAllLeads = async (req, res, next) => {
     const { status, city_name, search } = req.query;
 
     let sql = `
-      SELECT l.*, s.title as service_name 
+      SELECT l.*, s.title AS service_name
       FROM leads l
-      LEFT JOIN services s ON l.service_interest_id = s.id
+      LEFT JOIN services s
+        ON l.service_interest_id COLLATE utf8mb4_unicode_ci
+           = s.id COLLATE utf8mb4_unicode_ci
       WHERE 1=1
     `;
+
     const params = [];
 
     // Filters
     if (status) {
-      sql += ' AND l.status = ?';
+      sql += " AND l.status = ?";
       params.push(status);
     }
+
     if (city_name) {
-      sql += ' AND l.city_name = ?';
+      sql += " AND l.city_name = ?";
       params.push(city_name);
     }
-    // Simple search by name or phone
+
     if (search) {
-      sql += ' AND (l.name LIKE ? OR l.phone LIKE ?)';
+      sql += " AND (l.name LIKE ? OR l.phone LIKE ?)";
       params.push(`%${search}%`, `%${search}%`);
     }
 
-    sql += ' ORDER BY l.created_at DESC LIMIT 100'; // Default limit
+    sql += " ORDER BY l.created_at DESC LIMIT 100";
+
+    console.log("SQL:", sql);
 
     const [leads] = await db.execute(sql, params);
 
-    res.json({ success: true, count: leads.length, data: leads });
+    res.json({
+      success: true,
+      count: leads.length,
+      data: leads
+    });
   } catch (error) {
     next(error);
   }
