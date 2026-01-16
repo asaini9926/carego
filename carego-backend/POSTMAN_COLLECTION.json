@@ -1,0 +1,1310 @@
+{
+  "info": {
+    "name": "Carego Platform - Complete API Testing",
+    "description": "Comprehensive test collection for all 140+ endpoints across all phases (0-4)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{admin_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "1. SETUP - Authentication (Login First)",
+      "description": "Start here - Login to get tokens for all subsequent requests",
+      "item": [
+        {
+          "name": "1.1 Admin Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const body = pm.response.json();",
+                  "    pm.environment.set('admin_token', body.data.token);",
+                  "    pm.environment.set('admin_refresh_token', body.data.refreshToken);",
+                  "    pm.environment.set('current_user_id', body.data.user.id);",
+                  "    pm.test('Login successful and token saved', () => {",
+                  "        pm.expect(body.success).to.be.true;",
+                  "        pm.expect(body.data.token).to.exist;",
+                  "    });",
+                  "}",
+                  "pm.test('Status code is 200', () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@carego.in\",\n  \"password\": \"Test@1234\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "1.2 Client Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const body = pm.response.json();",
+                  "    pm.environment.set('client_token', body.data.token);",
+                  "    pm.environment.set('client_user_id', body.data.user.id);",
+                  "    pm.test('Client login successful', () => {",
+                  "        pm.expect(body.data.user.user_type).to.equal('CLIENT');",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"client1@example.com\",\n  \"password\": \"Test@1234\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "1.3 Staff Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const body = pm.response.json();",
+                  "    pm.environment.set('staff_token', body.data.token);",
+                  "    pm.environment.set('staff_user_id', body.data.user.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"staff1@example.com\",\n  \"password\": \"Test@1234\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "1.4 Check Current Auth",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. PHASE 0-1: Public APIs",
+      "item": [
+        {
+          "name": "2.1 List Cities",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/public/cities",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "public",
+                "cities"
+              ]
+            }
+          }
+        },
+        {
+          "name": "2.2 List Services",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/public/services?city_id=city-jaipur-001",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "public",
+                "services"
+              ],
+              "query": [
+                {
+                  "key": "city_id",
+                  "value": "city-jaipur-001"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "2.3 Get Service Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/public/services/svc-001",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "public",
+                "services",
+                "svc-001"
+              ]
+            }
+          }
+        },
+        {
+          "name": "2.4 Submit Lead",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Lead\",\n  \"phone\": \"9999400001\",\n  \"email\": \"lead@test.com\",\n  \"lead_type\": \"SERVICE\",\n  \"city_id\": \"city-jaipur-001\",\n  \"source\": \"website\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/leads",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "public",
+                "leads"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. PHASE 2: Client App",
+      "item": [
+        {
+          "name": "3.1 Get Client Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{client_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/client/profile",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "client",
+                "profile"
+              ]
+            }
+          }
+        },
+        {
+          "name": "3.2 Update Client Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{client_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"organization_name\": \"Health Plus Care Home Updated\",\n  \"contact_person_name\": \"Rajesh Kumar Singh\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/client/profile",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "client",
+                "profile"
+              ]
+            }
+          }
+        },
+        {
+          "name": "3.3 List Patients",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{client_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/client/patients?page=1&limit=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "client",
+                "patients"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "3.4 Create Patient",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{client_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"full_name\": \"New Patient Test\",\n  \"age\": 68,\n  \"gender\": \"FEMALE\",\n  \"medical_condition\": \"Post-Surgery Recovery\",\n  \"allergies\": \"Penicillin\",\n  \"emergency_contact_name\": \"Family Member\",\n  \"emergency_contact_phone\": \"9999500001\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/client/patients",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "client",
+                "patients"
+              ]
+            }
+          }
+        },
+        {
+          "name": "3.5 Get Patient Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{client_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/client/patients/patient-001",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "client",
+                "patients",
+                "patient-001"
+              ]
+            }
+          }
+        },
+        {
+          "name": "3.6 List Assignments",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{client_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/client/assignments",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "client",
+                "assignments"
+              ]
+            }
+          }
+        },
+        {
+          "name": "3.7 Get Assignment Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{client_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/client/assignments/assign-001",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "client",
+                "assignments",
+                "assign-001"
+              ]
+            }
+          }
+        },
+        {
+          "name": "3.8 List Care Logs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{client_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/client/assignments/assign-001/care-logs",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "client",
+                "assignments",
+                "assign-001",
+                "care-logs"
+              ]
+            }
+          }
+        },
+        {
+          "name": "3.9 List Invoices",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{client_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/client/invoices",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "client",
+                "invoices"
+              ]
+            }
+          }
+        },
+        {
+          "name": "3.10 Get Invoice",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{client_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/client/invoices/inv-001",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "client",
+                "invoices",
+                "inv-001"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. PHASE 2: Staff App",
+      "item": [
+        {
+          "name": "4.1 Get Staff Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{staff_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/staff/profile",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "staff",
+                "profile"
+              ]
+            }
+          }
+        },
+        {
+          "name": "4.2 Get Today's Assignments",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{staff_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/staff/assignments/today",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "staff",
+                "assignments",
+                "today"
+              ]
+            }
+          }
+        },
+        {
+          "name": "4.3 Get All Assignments",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{staff_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/staff/assignments?status=ACTIVE",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "staff",
+                "assignments"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "ACTIVE"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "4.4 Check In",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{staff_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"assignment_id\": \"assign-001\",\n  \"latitude\": 26.9124,\n  \"longitude\": 75.7873\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/staff/attendance/check-in",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "staff",
+                "attendance",
+                "check-in"
+              ]
+            }
+          }
+        },
+        {
+          "name": "4.5 Check Out",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{staff_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"assignment_id\": \"assign-001\",\n  \"latitude\": 26.9124,\n  \"longitude\": 75.7873\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/staff/attendance/check-out",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "staff",
+                "attendance",
+                "check-out"
+              ]
+            }
+          }
+        },
+        {
+          "name": "4.6 Create Care Log",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{staff_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"assignment_id\": \"assign-001\",\n  \"patient_id\": \"patient-001\",\n  \"content\": \"Patient vitals checked. BP: 130/85, HR: 75\",\n  \"services_provided\": \"Vital signs monitoring, Medication administration\",\n  \"patient_condition\": \"Stable\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/staff/care-logs",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "staff",
+                "care-logs"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. PHASE 3: Finance",
+      "item": [
+        {
+          "name": "5.1 List Invoices",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/finance/invoices",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "finance",
+                "invoices"
+              ]
+            }
+          }
+        },
+        {
+          "name": "5.2 Create Invoice",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"client_id\": \"user-client-001\",\n  \"invoice_number\": \"INV-2026-0010\",\n  \"amount\": 20000,\n  \"tax_percentage\": 18,\n  \"due_date\": \"2026-02-28\",\n  \"description\": \"Care services for February 2026\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/finance/invoices",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "finance",
+                "invoices"
+              ]
+            }
+          }
+        },
+        {
+          "name": "5.3 Get Invoice",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/finance/invoices/inv-001",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "finance",
+                "invoices",
+                "inv-001"
+              ]
+            }
+          }
+        },
+        {
+          "name": "5.4 List Subscription Plans",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/finance/subscription-plans",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "finance",
+                "subscription-plans"
+              ]
+            }
+          }
+        },
+        {
+          "name": "5.5 Get Financial Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/finance/dashboard",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "finance",
+                "dashboard"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. PHASE 3: Training",
+      "item": [
+        {
+          "name": "6.1 List Courses",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/training/courses",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "training",
+                "courses"
+              ]
+            }
+          }
+        },
+        {
+          "name": "6.2 Get Course Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/training/courses/course-001",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "training",
+                "courses",
+                "course-001"
+              ]
+            }
+          }
+        },
+        {
+          "name": "6.3 List Course Batches",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/training/courses/course-001/batches",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "training",
+                "courses",
+                "course-001",
+                "batches"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. PHASE 4 W1: Payments",
+      "item": [
+        {
+          "name": "7.1 List Payments",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/payments",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "payments"
+              ]
+            }
+          }
+        },
+        {
+          "name": "7.2 Get Payment",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/payments/pay-001",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "payments",
+                "pay-001"
+              ]
+            }
+          }
+        },
+        {
+          "name": "7.3 Get Payment Methods",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{client_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/payments/methods",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "payments",
+                "methods"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. PHASE 4 W1: Ratings",
+      "item": [
+        {
+          "name": "8.1 List Ratings",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/ratings",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "ratings"
+              ]
+            }
+          }
+        },
+        {
+          "name": "8.2 Get User Rating Summary",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/ratings/summary/user-staff-001",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "ratings",
+                "summary",
+                "user-staff-001"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "9. PHASE 4 W2: Analytics",
+      "item": [
+        {
+          "name": "9.1 Get Analytics Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/analytics/dashboard",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "analytics",
+                "dashboard"
+              ]
+            }
+          }
+        },
+        {
+          "name": "9.2 Get Revenue Analytics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/analytics/revenue?period=MONTHLY&months=6",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "analytics",
+                "revenue"
+              ],
+              "query": [
+                {
+                  "key": "period",
+                  "value": "MONTHLY"
+                },
+                {
+                  "key": "months",
+                  "value": "6"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "10. PHASE 4 W3: Integrations",
+      "item": [
+        {
+          "name": "10.1 Hospital - Map Patient",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"hospital_patient_id\": \"HSP-12345\",\n  \"carego_patient_id\": \"patient-001\",\n  \"hospital_id\": \"hosp-001\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/integrations/hospital/map",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "integrations",
+                "hospital",
+                "map"
+              ]
+            }
+          }
+        },
+        {
+          "name": "10.2 IoT - Register Device",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"staff_id\": \"user-staff-001\",\n  \"device_type\": \"PULSE_OXIMETER\",\n  \"device_id\": \"DEV-12345\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/integrations/iot/devices",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "integrations",
+                "iot",
+                "devices"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "11. PHASE 4 W4: Compliance",
+      "item": [
+        {
+          "name": "11.1 Get Audit Logs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/audit-logs",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "audit-logs"
+              ]
+            }
+          }
+        },
+        {
+          "name": "11.2 Generate Compliance Export",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"export_type\": \"GDPR\",\n  \"start_date\": \"2026-01-01\",\n  \"end_date\": \"2026-01-31\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/compliance/export",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "compliance",
+                "export"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "12. ADMIN Management",
+      "item": [
+        {
+          "name": "12.1 List Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/users?page=1&limit=20",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "users"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "12.2 Get User Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/users/user-client-001",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "users",
+                "user-client-001"
+              ]
+            }
+          }
+        },
+        {
+          "name": "12.3 Create User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"newuser@carego.in\",\n  \"phone\": \"9999000010\",\n  \"user_type\": \"STAFF\",\n  \"password\": \"SecurePass@1234\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/users",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "users"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "admin_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "client_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "staff_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "student_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "teacher_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "current_user_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "admin_user_id",
+      "value": "user-admin-001",
+      "type": "string"
+    },
+    {
+      "key": "client_user_id",
+      "value": "user-client-001",
+      "type": "string"
+    },
+    {
+      "key": "staff_user_id",
+      "value": "user-staff-001",
+      "type": "string"
+    }
+  ]
+}

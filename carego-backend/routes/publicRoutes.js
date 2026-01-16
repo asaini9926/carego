@@ -1,31 +1,40 @@
 const express = require('express');
 const { body } = require('express-validator');
 const publicController = require('../controllers/publicController');
-const validate = require('../middleware/validate');
+const { asyncHandler, ApiError } = require('../utils/errors');
 
 const router = express.Router();
 
-// Get Master Data
+// Validation middleware
+const validateRequest = (req, res, next) => {
+  const errors = require('express-validator').validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      message: 'Validation error',
+      errors: errors.array()
+    });
+  }
+  next();
+};
+
+// Master data endpoints
 router.get('/cities', publicController.getCities);
 router.get('/services', publicController.getServices);
+router.get('/services/:slug', publicController.getServiceDetail);
+router.get('/courses', publicController.getCourses);
 
-// Create Lead (With strict validation)
+// Lead creation
 router.post(
   '/leads',
   [
     body('name').trim().notEmpty().withMessage('Name is required'),
-    body('phone')
-      .trim()
-      .notEmpty().withMessage('Phone is required')
-      .isLength({ min: 10, max: 15 }).withMessage('Phone must be valid'),
-    body('type').optional().isIn(['SERVICE', 'TRAINING', 'OTHER']),
-    body('email').optional().isEmail().withMessage('Invalid email format'),
-    // Sanitize address inputs to prevent weird characters
-    body('address_text').optional().trim().escape(),
-    body('city_name').optional().trim().escape(),
-    body('pincode').optional().trim().isLength({ min: 6 }).withMessage('Invalid Pincode'),
-    validate // Run the validation
+    body('phone').trim().notEmpty().isLength({ min: 10, max: 15 }).withMessage('Valid phone required'),
+    body('email').optional().isEmail().withMessage('Invalid email'),
+    body('pincode').optional().isLength({ min: 5, max: 10 }).withMessage('Invalid pincode'),
+    body('leadType').optional().isIn(['SERVICE', 'TRAINING', 'EQUIPMENT', 'STAFF', 'TEACHER']),
   ],
+  validateRequest,
   publicController.createLead
 );
 
