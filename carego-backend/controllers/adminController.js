@@ -145,5 +145,211 @@ exports.convertLead = asyncHandler(async (req, res) => {
       userType,
       phone: lead.phone
     }
+
+  });
+});
+
+/**
+ * GET /api/v1/admin/stats
+ * Dashboard statistics
+ */
+exports.getDashboardStats = asyncHandler(async (req, res) => {
+  // 1. Leads Count (Total, Converted, Pending)
+  const [leadCounts] = await db.execute(`
+    SELECT 
+      COUNT(*) as total,
+      SUM(CASE WHEN lead_status = 'CONVERTED' THEN 1 ELSE 0 END) as converted,
+      SUM(CASE WHEN lead_status = 'NEW' THEN 1 ELSE 0 END) as pending
+    FROM leads
+  `);
+
+  // 2. Today's Leads
+  const [todayLeads] = await db.execute(`
+    SELECT COUNT(*) as count FROM leads 
+    WHERE created_at >= CURDATE()
+  `);
+
+  // 3. Leads Graph (This Month - Grouped by Day)
+  const [leadsByDay] = await db.execute(`
+    SELECT DATE_FORMAT(created_at, '%Y-%m-%d') as date, COUNT(*) as count
+    FROM leads
+    WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+    GROUP BY DATE_FORMAT(created_at, '%Y-%m-%d')
+    ORDER BY date ASC
+  `);
+
+  // 4. Leads Graph (This Year - Grouped by Month)
+  const [leadsByMonth] = await db.execute(`
+    SELECT DATE_FORMAT(created_at, '%Y-%m') as month, COUNT(*) as count
+    FROM leads
+    WHERE created_at >= DATE_FORMAT(CURDATE(), '%Y-01-01')
+    GROUP BY DATE_FORMAT(created_at, '%Y-%m')
+    ORDER BY month ASC
+  `);
+
+  res.status(200).json({
+    success: true,
+    data: {
+      leads: {
+        total: leadCounts[0].total,
+        converted: leadCounts[0].converted,
+        pending: leadCounts[0].pending,
+        today: todayLeads[0].count
+      },
+      graphs: {
+        daily: leadsByDay,
+        monthly: leadsByMonth
+      }
+    }
+  });
+});
+
+/**
+ * POST /api/v1/admin/cities
+ * Create a new city
+ */
+exports.createCity = asyncHandler(async (req, res) => {
+  const { name, state, latitude, longitude, isActive = true } = req.body;
+
+  if (!name || !state) {
+    throw new ApiError('Name and state are required', 400);
+  }
+
+  const id = generateId(); 
+  // Assuming 'generateId' creates a string like 'city-...' or just a UUID. 
+  // If your validator utils generate specific IDs, use that. 
+  // For safety, let's assume simple ID or UUID.
+  
+  await db.execute(
+    `INSERT INTO cities (id, name, state, latitude, longitude, is_active)
+     VALUES (?, ?, ?, ?, ?, ?)`,
+    [id, name, state, latitude || null, longitude || null, isActive]
+  );
+
+  res.status(201).json({
+    success: true,
+    message: 'City created',
+    data: { id, name, state }
+  });
+});
+
+/**
+ * PUT /api/v1/admin/cities/:id
+ * Update city details
+ */
+exports.updateCity = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { name, state, latitude, longitude, isActive } = req.body;
+
+  await db.execute(
+    `UPDATE cities 
+     SET name = COALESCE(?, name), 
+         state = COALESCE(?, state), 
+         latitude = COALESCE(?, latitude), 
+         longitude = COALESCE(?, longitude), 
+         is_active = COALESCE(?, is_active)
+     WHERE id = ?`,
+    [name, state, latitude, longitude, isActive, id]
+  );
+
+  res.status(200).json({
+    success: true,
+    message: 'City updated'
+  });
+});
+
+/**
+ * DELETE /api/v1/admin/cities/:id
+ * Delete city (Soft delete or check dependencies)
+ */
+exports.deleteCity = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  // Check dependencies (e.g., services, leads linked to this city)
+  // Simply setting is_active to FALSE is safer than DELETE
+  // But if strictly DELETE requested:
+  
+  try {
+     await db.execute('DELETE FROM cities WHERE id = ?', [id]);
+  } catch (error) {
+     if (error.code === 'ER_ROW_IS_REFERENCED_2') {
+        throw new ApiError('City cannot be deleted as it is being used.', 400);
+     }
+     throw error;
+  }
+
+  res.status(200).json({
+    success: true,
+    message: 'City deleted'
+  });
+});
+
+/**
+ * POST /api/v1/admin/services
+ * Create a new service
+ */
+exports.createService = asyncHandler(async (req, res) => {
+  const { title, slug, shortDescription, longDescription, priceMin, priceMax, cityId, isActive = true } = req.body;
+
+  if (!title || !slug || !cityId) {
+    throw new ApiError('Title, slug, and cityId are required', 400);
+  }
+
+  const id = generateId();
+
+  await db.execute(
+    `INSERT INTO services 
+     (id, title, slug, short_description, long_description, price_range_min, price_range_max, city_id, is_active)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [id, title, slug, shortDescription, longDescription, priceMin, priceMax, cityId, isActive]
+  );
+
+  res.status(201).json({
+    success: true,
+    message: 'Service created',
+    data: { id, title }
+  });
+});
+
+/**
+ * PUT /api/v1/admin/services/:id
+ * Update service
+ */
+exports.updateService = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { title, slug, shortDescription, longDescription, priceMin, priceMax, cityId, isActive } = req.body;
+
+  await db.execute(
+    `UPDATE services 
+     SET title = COALESCE(?, title), 
+         slug = COALESCE(?, slug), 
+         short_description = COALESCE(?, short_description), 
+         long_description = COALESCE(?, long_description), 
+         price_range_min = COALESCE(?, price_range_min), 
+         price_range_max = COALESCE(?, price_range_max), 
+         city_id = COALESCE(?, city_id), 
+         is_active = COALESCE(?, is_active)
+     WHERE id = ?`,
+    [title, slug, shortDescription, longDescription, priceMin, priceMax, cityId, isActive, id]
+  );
+
+  res.status(200).json({
+    success: true,
+    message: 'Service updated'
+  });
+});
+
+/**
+ * DELETE /api/v1/admin/services/:id
+ * Delete service
+ */
+exports.deleteService = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  await db.execute('DELETE FROM services WHERE id = ?', [id]);
+
+  res.status(200).json({
+    success: true,
+    message: 'Service deleted'
   });
 });
