@@ -163,3 +163,71 @@
 {"timestamp":"2026-01-16T12:02:36.352Z","level":"INFO","message":"🟢 POST /leads/c64c8e9f-61d5-43e9-84f3-d8d24f12e2cc/convert - 201 (607ms)"}
 {"timestamp":"2026-01-16T12:06:07.094Z","level":"INFO","message":"🔴 GET /profile - 403 (10ms)"}
 {"timestamp":"2026-01-16T12:06:25.100Z","level":"INFO","message":"🔴 GET /patients - 403 (7ms)"}
+{"timestamp":"2026-01-16T14:00:12.041Z","level":"INFO","message":"\n🚀 Carego Backend Server"}
+{"timestamp":"2026-01-16T14:00:12.044Z","level":"INFO","message":"📍 Environment: development"}
+{"timestamp":"2026-01-16T14:00:12.045Z","level":"INFO","message":"🔌 Port: 8000"}
+{"timestamp":"2026-01-16T14:00:12.046Z","level":"INFO","message":"📚 API: http://localhost:8000/api/v1"}
+{"timestamp":"2026-01-16T14:00:12.047Z","level":"INFO","message":"✅ Ready to accept requests\n"}
+{"timestamp":"2026-01-16T14:02:17.958Z","level":"INFO","message":"🟢 GET /cities - 200 (148ms)"}
+{"timestamp":"2026-01-16T14:02:18.010Z","level":"INFO","message":"🟢 GET /services - 200 (21ms)"}
+{"timestamp":"2026-01-16T14:02:28.315Z","level":"INFO","message":"🔴 GET /api/v1/public/services/undefined - 404 (16ms)"}
+{"timestamp":"2026-01-16T14:02:36.206Z","level":"INFO","message":"🔴 GET /api/v1/public/services/undefined - 404 (10ms)"}
+{"timestamp":"2026-01-16T14:02:47.632Z","level":"INFO","message":"🟢 GET /services - 200 (4ms)"}
+{"timestamp":"2026-01-16T14:03:02.859Z","level":"INFO","message":"🟢 GET /services - 200 (2ms)"}
+{"timestamp":"2026-01-16T14:03:10.502Z","level":"INFO","message":"🟢 GET /services - 200 (2ms)"}
+{"timestamp":"2026-01-16T14:10:01.417Z","level":"INFO","message":"\n🚀 Carego Backend Server"}
+{"timestamp":"2026-01-16T14:10:01.420Z","level":"INFO","message":"📍 Environment: development"}
+{"timestamp":"2026-01-16T14:10:01.421Z","level":"INFO","message":"🔌 Port: 8000"}
+{"timestamp":"2026-01-16T14:10:01.422Z","level":"INFO","message":"📚 API: http://localhost:8000/api/v1"}
+{"timestamp":"2026-01-16T14:10:01.423Z","level":"INFO","message":"✅ Ready to accept requests\n"}
+{"timestamp":"2026-01-16T14:10:26.288Z","level":"INFO","message":"🟢 GET /services - 200 (32ms)"}
+{"timestamp":"2026-01-16T14:12:23.977Z","level":"INFO","message":"🟢 GET /services - 200 (5ms)"}
+{"timestamp":"2026-01-16T14:13:54.180Z","level":"INFO","message":"🟢 GET /services - 200 (7ms)"}
+{"timestamp":"2026-01-16T14:35:40.563Z","level":"INFO","message":"\n🚀 Carego Backend Server"}
+{"timestamp":"2026-01-16T14:35:40.566Z","level":"INFO","message":"📍 Environment: development"}
+{"timestamp":"2026-01-16T14:35:40.567Z","level":"INFO","message":"🔌 Port: 8000"}
+{"timestamp":"2026-01-16T14:35:40.568Z","level":"INFO","message":"📚 API: http://localhost:8000/api/v1"}
+{"timestamp":"2026-01-16T14:35:40.569Z","level":"INFO","message":"✅ Ready to accept requests\n"}
+{"timestamp":"2026-01-16T14:36:37.876Z","level":"INFO","message":"🟢 GET /services - 200 (26ms)"}
+{"timestamp":"2026-01-16T14:38:10.628Z","level":"INFO","message":"🟢 GET /services - 200 (22ms)"}
+{"timestamp":"2026-01-16T14:38:13.549Z","level":"INFO","message":"🔴 GET /stats - 401 (17ms)"}
+{"timestamp":"2026-01-16T14:38:13.561Z","level":"INFO","message":"🔴 GET /stats - 401 (8ms)"}
+{"timestamp":"2026-01-16T14:38:37.612Z","level":"INFO","message":"🔴 GET /leads - 401 (6ms)"}
+{"timestamp":"2026-01-16T14:38:37.621Z","level":"INFO","message":"🔴 GET /leads - 401 (5ms)"}
+{"timestamp":"2026-01-16T14:38:39.827Z","level":"INFO","message":"🟢 GET /cities - 200 (45ms)"}
+{"timestamp":"2026-01-16T14:38:39.833Z","level":"INFO","message":"🟡 GET /cities - 304 (4ms)"}
+{"timestamp":"2026-01-16T14:38:39.847Z","level":"INFO","message":"🟢 GET /services - 200 (6ms)"}
+{"timestamp":"2026-01-16T14:38:47.457Z","level":"INFO","message":"🟡 GET /cities - 304 (7ms)"}
+{"timestamp":"2026-01-16T14:38:47.473Z","level":"INFO","message":"🟡 GET /cities - 304 (7ms)"}
+{"timestamp":"2026-01-16T14:38:54.137Z","level":"INFO","message":"🔴 GET /clients - 401 (10ms)"}
+{"timestamp":"2026-01-16T14:38:54.155Z","level":"INFO","message":"🔴 GET /clients - 401 (12ms)"}
+{"timestamp":"2026-01-16T14:38:56.233Z","level":"INFO","message":"🟡 GET /cities - 304 (4ms)"}
+{"timestamp":"2026-01-16T14:38:56.243Z","level":"INFO","message":"🟡 GET /cities - 304 (4ms)"}
+{"timestamp":"2026-01-16T14:38:56.253Z","level":"INFO","message":"🟡 GET /services - 304 (4ms)"}
+{"timestamp":"2026-01-16T14:40:51.781Z","level":"INFO","message":"🟢 GET /services - 200 (3ms)"}
+{"timestamp":"2026-01-16T14:40:53.714Z","level":"INFO","message":"🟢 GET /services - 200 (13ms)"}
+{"timestamp":"2026-01-16T14:41:00.570Z","level":"INFO","message":"🟢 GET /services - 200 (4ms)"}
+{"timestamp":"2026-01-16T14:41:39.383Z","level":"INFO","message":"🟡 GET /services - 304 (3ms)"}
+{"timestamp":"2026-01-16T14:41:47.127Z","level":"INFO","message":"🔴 GET /leads - 401 (3ms)"}
+{"timestamp":"2026-01-16T14:41:47.133Z","level":"INFO","message":"🔴 GET /leads - 401 (3ms)"}
+{"timestamp":"2026-01-16T14:41:49.129Z","level":"INFO","message":"🔴 GET /leads - 401 (5ms)"}
+{"timestamp":"2026-01-16T14:41:50.400Z","level":"INFO","message":"🔴 GET /leads - 401 (2ms)"}
+{"timestamp":"2026-01-16T14:41:53.895Z","level":"INFO","message":"🔴 GET /leads - 401 (2ms)"}
+{"timestamp":"2026-01-16T14:41:55.381Z","level":"INFO","message":"🔴 GET /leads - 401 (4ms)"}
+{"timestamp":"2026-01-16T14:42:23.415Z","level":"INFO","message":"🟡 GET /cities - 304 (3ms)"}
+{"timestamp":"2026-01-16T14:42:23.423Z","level":"INFO","message":"🟡 GET /cities - 304 (3ms)"}
+{"timestamp":"2026-01-16T14:42:23.434Z","level":"INFO","message":"🟡 GET /services - 304 (5ms)"}
+{"timestamp":"2026-01-16T14:42:26.793Z","level":"INFO","message":"🟡 GET /services - 304 (4ms)"}
+{"timestamp":"2026-01-16T14:42:43.556Z","level":"INFO","message":"🟡 GET /services - 304 (3ms)"}
+{"timestamp":"2026-01-16T14:42:50.736Z","level":"INFO","message":"🟢 GET /services/mental-health - 200 (32ms)"}
+{"timestamp":"2026-01-16T14:43:03.955Z","level":"INFO","message":"🟢 GET /services - 200 (4ms)"}
+{"timestamp":"2026-01-16T14:43:15.747Z","level":"INFO","message":"🟢 GET /services/mental-health - 200 (8ms)"}
+{"timestamp":"2026-01-16T14:43:20.679Z","level":"INFO","message":"🟢 GET /services - 200 (2ms)"}
+{"timestamp":"2026-01-16T14:43:41.539Z","level":"INFO","message":"🟢 GET /services - 200 (2ms)"}
+{"timestamp":"2026-01-16T14:43:47.264Z","level":"INFO","message":"🟢 GET /services - 200 (2ms)"}
+{"timestamp":"2026-01-16T14:43:51.263Z","level":"INFO","message":"🟢 GET /services - 200 (4ms)"}
+{"timestamp":"2026-01-16T14:43:52.600Z","level":"INFO","message":"🟢 GET /services - 200 (4ms)"}
+{"timestamp":"2026-01-16T14:44:18.682Z","level":"INFO","message":"🟡 GET /cities - 304 (5ms)"}
+{"timestamp":"2026-01-16T14:44:18.687Z","level":"INFO","message":"🟡 GET /cities - 304 (3ms)"}
+{"timestamp":"2026-01-16T14:44:18.703Z","level":"INFO","message":"🟡 GET /services - 304 (3ms)"}
+{"timestamp":"2026-01-16T14:44:39.059Z","level":"INFO","message":"🟢 GET /services - 200 (7ms)"}
